@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kido Sudoku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- html2canvas for share -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body class="page page--gradient-bg">
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <div class="site-brand">
+        <span class="site-brand__logo" aria-hidden="true">🔢</span>
+        <div class="site-brand__text">
+          <h1 class="site-brand__title">Kido Sudoku</h1>
+          <p class="site-brand__tagline">Soft, simple puzzles for bright little minds</p>
+        </div>
+      </div>
+      <div class="site-header__meta">
+        <!-- Optional mini badge / version / mute icon slot -->
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <!-- Landing / Setup -->
+    <section id="landing-section" class="section section--padded" aria-label="Game setup">
+      <div class="container">
+        <div class="grid grid--landing">
+          <!-- Left: intro / name -->
+          <div class="card card--primary card--pop-in">
+            <header class="card__header">
+              <h2 class="card__title">Start your Sudoku adventure</h2>
+              <p class="card__subtitle">Enter your name and pick a fun challenge to begin.</p>
+            </header>
+            <div class="card__body">
+              <!-- Player name -->
+              <div class="form-group">
+                <label for="playerName" class="form-label">Your name</label>
+                <input id="playerName" class="form-input" type="text" autocomplete="off" maxlength="20" placeholder="Type your name here...">
+                <p class="form-help">We'll greet you in the game! 🎉</p>
+              </div>
+
+              <!-- Game mode -->
+              <fieldset class="form-group form-group--fieldset">
+                <legend class="form-label">Choose a game mode</legend>
+                <div class="button-group button-group--modes" role="radiogroup" aria-label="Game mode">
+                  <button type="button" class="mode-pill" data-mode="easy" aria-pressed="false">
+                    <span class="mode-pill__title">Clue Hunter</span>
+                    <span class="mode-pill__tag">Easy</span>
+                  </button>
+                  <button type="button" class="mode-pill" data-mode="medium" aria-pressed="false">
+                    <span class="mode-pill__title">Code Breaker</span>
+                    <span class="mode-pill__tag">Medium</span>
+                  </button>
+                  <button type="button" class="mode-pill" data-mode="hard" aria-pressed="false">
+                    <span class="mode-pill__title">Master Mind</span>
+                    <span class="mode-pill__tag">Hard</span>
+                  </button>
+                </div>
+                <!-- Mode definition box -->
+                <div id="modeDescription" class="mode-description card card--soft" aria-live="polite">
+                  <p class="mode-description__placeholder">Tap a mode to see what it means.</p>
+                </div>
+              </fieldset>
+
+              <!-- Grid size -->
+              <fieldset class="form-group form-group--fieldset">
+                <legend class="form-label">Pick a grid size</legend>
+                <div class="button-group button-group--sizes" role="radiogroup" aria-label="Grid size">
+                  <button type="button" class="size-pill" data-size="4" aria-pressed="false">4×4</button>
+                  <button type="button" class="size-pill" data-size="6" aria-pressed="false">6×6</button>
+                </div>
+              </fieldset>
+            </div>
+<footer class="card__footer card__footer--actions">
+  <button id="startGameBtn" class="btn btn--primary btn--large" type="button" disabled>
+    Start Game
+  </button>
+</footer>
+          </div>
+
+          <!-- Right: info / tips card -->
+          <aside class="card card--secondary card--pop-in" aria-label="How to play">
+            <header class="card__header">
+              <h3 class="card__title">How it works</h3>
+            </header>
+            <div class="card__body">
+              <ul class="feature-list">
+                <li>Fill the grid so each row and column has every number only once.</li>
+                <li>Use Notes mode to jot tiny helper numbers inside a cell.</li>
+                <li>Wrong tries gently lower your score, but you never go below zero.</li>
+              </ul>
+              <div class="badge-row">
+                <span class="badge badge--soft">Kid friendly</span>
+                <span class="badge badge--soft">Pastel theme</span>
+                <span class="badge badge--soft">No ads</span>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game Screen -->
+    <section id="game-section" class="section section--padded section--hidden" aria-label="Sudoku game" hidden>
+      <div class="container">
+        <div class="card card--primary card--pop-in game-shell">
+          <header class="card__header game-header">
+		  
+<div class="game-header__actions">
+  <button id="backBtn" type="button" class="btn btn--ghost btn--small" aria-label="Back to setup">← Back</button>
+</div>
+
+            <div class="game-header__title-block">
+              <h2 class="card__title" id="gameTitle">Sudoku! Welcome, <span id="playerNameDisplay"></span>!</h2>
+              <p class="card__subtitle" id="gameSubtitle">Fill the board without repeating numbers in any row or column.</p>
+            </div>
+            <div class="game-header__meta">
+              <div class="meta-pill">
+                <span class="meta-pill__label">Mode</span>
+                <span class="meta-pill__value" id="modeDisplay"></span>
+              </div>
+              <div class="meta-pill">
+                <span class="meta-pill__label">Grid</span>
+                <span class="meta-pill__value" id="sizeDisplay"></span>
+              </div>
+              <div class="meta-pill">
+                <span class="meta-pill__label">Time</span>
+                <span class="meta-pill__value" id="timerDisplay">00:00</span>
+              </div>
+              <div class="meta-pill">
+                <span class="meta-pill__label">Score</span>
+                <span class="meta-pill__value" id="scoreDisplay">0</span>
+              </div>
+              <div class="meta-pill">
+                <span class="meta-pill__label">High</span>
+                <span class="meta-pill__value" id="highScoreDisplay">-</span>
+              </div>
+            </div>
+          </header>
+          <div class="card__body game-body">
+            <div class="game-layout">
+              <!-- Board -->
+              <section class="game-panel game-panel--board" aria-label="Sudoku board">
+                <div id="board" class="sudoku-board" role="grid" aria-label="Sudoku board">
+                  <!-- Cells will be generated by JS -->
+                </div>
+                <p class="board-help">Tap a cell, then tap a number below. Use Notes for pencil marks.</p>
+              </section>
+
+              <!-- Right side: keypad / controls -->
+              <section class="game-panel game-panel--controls" aria-label="Number keypad and controls">
+                <!-- Notes toggle -->
+                <div class="controls-row controls-row--top">
+                  <button id="notesToggleBtn" type="button" class="btn btn--ghost" aria-pressed="false">Notes mode</button>
+                </div>
+
+                <!-- Number keypad -->
+                <div class="keypad" role="group" aria-label="Number keypad" id="keypad">
+                  <!-- JS will inject digit buttons 1-4 or 1-6 -->
+                </div>
+
+                <!-- Control buttons -->
+                <div class="controls-row controls-row--bottom">
+                  <button id="checkBtn" type="button" class="btn btn--ghost">Check</button>
+                  <button id="hintBtn" type="button" class="btn btn--ghost">Hint</button>
+                  <button id="newPuzzleBtn" type="button" class="btn btn--ghost">New puzzle</button>
+                  <button id="solutionBtn" type="button" class="btn btn--ghost">Show solution</button>
+                  <button id="undoBtn" type="button" class="btn btn--ghost" disabled>Undo</button>
+                  <button id="shareBtn" type="button" class="btn btn--ghost" disabled>Share</button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live regions for announcements -->
+        <div aria-live="polite" class="sr-only" id="statusMessage"></div>
+        <div aria-live="assertive" class="sr-only" id="errorMessage"></div>
+      </section>
+    </main>
+
+    <!-- Completion overlay -->
+    <div id="completionOverlay" class="overlay overlay--hidden" role="dialog" aria-modal="true" aria-labelledby="completionTitle" aria-describedby="completionStats" hidden>
+      <div class="overlay__backdrop"></div>
+      <div class="overlay__content card card--primary card--pop-in">
+        <div class="confetti-layer" aria-hidden="true" id="confettiLayer"></div>
+        <header class="card__header overlay__header">
+          <h2 id="completionTitle" class="card__title">Puzzle complete!</h2>
+          <p class="card__subtitle">Awesome job, brain hero! 🧠✨</p>
+        </header>
+        <div class="card__body overlay__body" id="completionStats">
+          <p><strong>Time:</strong> <span id="finalTime"></span></p>
+          <p><strong>Score:</strong> <span id="finalScore"></span></p>
+        </div>
+        <footer class="card__footer overlay__footer">
+          <button id="playAgainBtn" type="button" class="btn btn--primary">New puzzle</button>
+          <button id="changeSettingsBtn" type="button" class="btn btn--ghost">Change settings</button>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>
