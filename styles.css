@@ -1,31 +1,95 @@
-
 :root {
-  --bg-gradient-start: #e7ddff;
-  --bg-gradient-end:   #d4ffe7;
+  --bg-gradient-start: #e7f0ff;
+  --bg-gradient-end: #f0f4ff;
   --card-bg: #ffffff;
-  --accent: #10b981;          /* emerald green */
-  --accent-soft: #e0f9f0;
-  --accent-dark: #047857;
-  --error: #ef4444;
-  --error-soft: #fee2e2;
+  --accent: #141a38; /* new navy base */
+  --accent-soft: #e8eaf6;
+  --accent-dark: #0f1425;
+  --error: #dc2626;
+  --error-soft: #fef2f2;
   --text-main: #111827;
-  --text-muted: #6b7280;
-  --border-soft: #e5e7eb;
-  --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.09);
+  --text-muted: #64748b;
+  --border-soft: #e2e8f0;
+  --shadow-soft: 0 18px 40px rgba(20, 26, 56, 0.12);
   --radius-card: 8px;
   --radius-pill: 8px;
   --transition-fast: 150ms ease-out;
   --transition-med: 220ms ease-out;
+	--bg-image: url('https://ld-wp73.template-help.com/woocommerce/prod_25280/v3/wp-content/uploads/2019/08/bg-1.png');
 }
 
 /* Layout */
+
+/* styles.css : PATCHES */
+
+/* 1) Global fixes to prevent horizontal scroll on small screens */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { overflow-x: hidden; }
+
+/* Disable fixed backgrounds on small devices to avoid overflow/jank */
+@media (max-width: 640px) {
+  body.page--gradient-bg {
+    background-attachment: scroll;
+  }
+}
+
+/* 2) Icon utilities */
+.icon { display: inline-block; vertical-align: middle; }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-soft);
+  background: #f3f4f6; color: var(--text-main); cursor: pointer;
+  transition: background-color var(--transition-med), box-shadow var(--transition-med);
+}
+.icon-btn:hover { background: #e5e7eb; }
+
+/* Keep button+icon spacing nice if we ever combine */
+.btn .icon { margin-inline-end: .25rem; }
+
+/* 3) Gradient logo like the reference image */
+.site-brand__title { display: flex; gap: .45rem; align-items: baseline; }
+.logo--warm {
+  background: linear-gradient(90deg, #ff824d 0%, #ff5b2b 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+}
+.logo--cool {
+  background: linear-gradient(90deg, #4f8cff 0%, #1d4ed8 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+}
+
+/* 4) Help modal fine-tuning */
+.help-modal .card__header {
+  display:flex; align-items:center; justify-content:space-between;
+}
+.help-modal .icon-btn { border: none; background: transparent; }
+
+/* 5) Minor container tweak (optional; safer padding) */
+.container { max-width: 1120px; margin: 0 auto; padding-inline: 1rem; }
+
+
 
 body.page--gradient-bg {
   min-height: 100vh;
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--text-main);
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  /* Optional: subtle overlay for better card contrast */
+  position: relative;
+}
+
+body.page--gradient-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  
+  z-index: -1;
 }
 
 .container {
@@ -408,7 +472,7 @@ body.page--gradient-bg {
 .sudoku-cell {
   position: relative;
   background: #ffffff;
-  border-radius: 0.7rem;
+  border-radius: 3px;
   min-width: 44px;
   min-height: 44px;
   display: flex;
@@ -559,12 +623,8 @@ body.page--gradient-bg {
 }
 
 @keyframes pulseCell {
-  0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55);
-  }
-  100% {
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20, 26, 56, 0.55); }
+  50% { box-shadow: 0 0 0 6px rgba(20, 26, 56, 0.3); }
 }
 
 /* Confetti pieces */
@@ -648,6 +708,39 @@ body.page--gradient-bg {
     50% 0,          /* vertical center */
     0 33.33%,       /* first horizontal */
     0 66.66%;       /* second horizontal */
+  background-repeat: no-repeat;
+  border-radius: 0.7rem;
+  pointer-events: none;
+}
+.sudoku-board--8x8 {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.sudoku-board--8x8::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background-image:
+    linear-gradient(#9ca3af 0 0),  /* vertical 1 at 25% */
+    linear-gradient(#9ca3af 0 0),  /* vertical 2 at 50% */
+    linear-gradient(#9ca3af 0 0),  /* vertical 3 at 75% */
+    linear-gradient(#9ca3af 0 0),  /* horizontal 1 at 25% */
+    linear-gradient(#9ca3af 0 0),  /* horizontal 2 at 50% */
+    linear-gradient(#9ca3af 0 0);  /* horizontal 3 at 75% */
+  background-size:
+    2px 100%,   /* vertical 1 */
+    2px 100%,   /* vertical 2 */
+    2px 100%,   /* vertical 3 */
+    100% 2px,   /* horizontal 1 */
+    100% 2px,   /* horizontal 2 */
+    100% 2px;   /* horizontal 3 */
+  background-position:
+    25% 0,      /* vertical 1 at 25% */
+    50% 0,      /* vertical 2 at 50% */
+    75% 0,      /* vertical 3 at 75% */
+    0 25%,      /* horizontal 1 at 25% */
+    0 50%,      /* horizontal 2 at 50% */
+    0 75%;      /* horizontal 3 at 75% */
   background-repeat: no-repeat;
   border-radius: 0.7rem;
   pointer-events: none;
